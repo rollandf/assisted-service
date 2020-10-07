@@ -28,6 +28,7 @@ import (
 	"github.com/openshift/assisted-service/internal/installercache"
 	"github.com/openshift/assisted-service/internal/network"
 	"github.com/openshift/assisted-service/models"
+	"github.com/openshift/assisted-service/pkg/ocs"
 	"github.com/openshift/assisted-service/pkg/s3wrapper"
 )
 
@@ -102,9 +103,32 @@ func (g *installerGenerator) Generate(installConfig []byte) error {
 		g.log.Errorf("Failed to write file %s", installConfigPath)
 		return err
 	}
-
-	cmd := exec.Command(installerPath, "create", "ignition-configs", "--dir", g.workDir)
+	cmd := exec.Command(installerPath, "create", "manifests", "--dir", g.workDir)
 	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+	cmd.Env = envVars
+	err = cmd.Run()
+	if err != nil {
+		g.log.Error("error running openshift-install create manifests directory")
+		g.log.Error(out.String())
+		return err
+	}
+
+	if *g.cluster.InstallOcs {
+		manifests := ocs.Manifests()
+		manifestDirPath := filepath.Join(g.workDir, "manifests")
+		for name, manifest := range manifests {
+			manifestPath := filepath.Join(manifestDirPath, name)
+			err = ioutil.WriteFile(manifestPath, []byte(manifest), 0600)
+			if err != nil {
+				g.log.Errorf("Failed to write file %s %s", manifestPath, name)
+				return err
+			}
+		}
+	}
+
+	cmd = exec.Command(installerPath, "create", "ignition-configs", "--dir", g.workDir)
 	cmd.Stdout = &out
 	cmd.Stderr = &out
 	cmd.Env = envVars
