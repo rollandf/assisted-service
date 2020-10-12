@@ -2927,6 +2927,11 @@ func init() {
           "x-go-custom-tag": "gorm:\"type:varchar(2048)\"",
           "example": "{\"networking\":{\"networkType\": \"OVN-Kubernetes\"},\"fips\":true}"
         },
+        "install_ocs": {
+          "description": "Indicates if OpenShift Container Storage is installed.",
+          "type": "boolean",
+          "x-nullable": true
+        },
         "install_started_at": {
           "description": "The time that this cluster started installation.",
           "type": "string",
@@ -3066,6 +3071,12 @@ func init() {
           "type": "string",
           "pattern": "^(([0-9]{1,3}\\.){3}[0-9]{1,3})?$"
         },
+        "install_ocs": {
+          "description": "Indicates if OpenShift Container Storage is installed.",
+          "type": "boolean",
+          "default": false,
+          "x-nullable": true
+        },
         "name": {
           "description": "Name of the OpenShift cluster.",
           "type": "string"
@@ -3193,6 +3204,12 @@ func init() {
           "description": "The virtual IP used for cluster ingress traffic.",
           "type": "string",
           "pattern": "^(([0-9]{1,3}\\.){3}[0-9]{1,3})?$",
+          "x-nullable": true
+        },
+        "install_ocs": {
+          "description": "Indicate if Local Storage Operator is installed.",
+          "type": "boolean",
+          "default": false,
           "x-nullable": true
         },
         "machine_network_cidr": {
@@ -7249,6 +7266,11 @@ func init() {
           "x-go-custom-tag": "gorm:\"type:varchar(2048)\"",
           "example": "{\"networking\":{\"networkType\": \"OVN-Kubernetes\"},\"fips\":true}"
         },
+        "install_ocs": {
+          "description": "Indicates if OpenShift Container Storage is installed.",
+          "type": "boolean",
+          "x-nullable": true
+        },
         "install_started_at": {
           "description": "The time that this cluster started installation.",
           "type": "string",
@@ -7388,6 +7410,12 @@ func init() {
           "type": "string",
           "pattern": "^(([0-9]{1,3}\\.){3}[0-9]{1,3})?$"
         },
+        "install_ocs": {
+          "description": "Indicates if OpenShift Container Storage is installed.",
+          "type": "boolean",
+          "default": false,
+          "x-nullable": true
+        },
         "name": {
           "description": "Name of the OpenShift cluster.",
           "type": "string"
@@ -7497,6 +7525,12 @@ func init() {
           "description": "The virtual IP used for cluster ingress traffic.",
           "type": "string",
           "pattern": "^(([0-9]{1,3}\\.){3}[0-9]{1,3})?$",
+          "x-nullable": true
+        },
+        "install_ocs": {
+          "description": "Indicate if Local Storage Operator is installed.",
+          "type": "boolean",
+          "default": false,
           "x-nullable": true
         },
         "machine_network_cidr": {

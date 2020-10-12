@@ -45,6 +45,9 @@ type ClusterCreateParams struct {
 	// Pattern: ^(([0-9]{1,3}\.){3}[0-9]{1,3})?$
 	IngressVip string `json:"ingress_vip,omitempty"`
 
+	// Indicates if OpenShift Container Storage is installed.
+	InstallOcs *bool `json:"install_ocs,omitempty"`
+
 	// Name of the OpenShift cluster.
 	// Required: true
 	Name *string `json:"name"`

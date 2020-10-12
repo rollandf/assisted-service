@@ -93,6 +93,9 @@ type Cluster struct {
 	// JSON-formatted string containing the user overrides for the install-config.yaml file.
 	InstallConfigOverrides string `json:"install_config_overrides,omitempty" gorm:"type:varchar(2048)"`
 
+	// Indicates if OpenShift Container Storage is installed.
+	InstallOcs *bool `json:"install_ocs,omitempty"`
+
 	// The time that this cluster started installation.
 	// Format: date-time
 	InstallStartedAt strfmt.DateTime `json:"install_started_at,omitempty" gorm:"type:timestamp with time zone;default:'2000-01-01 00:00:00z'"`

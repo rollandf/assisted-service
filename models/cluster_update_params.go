@@ -58,6 +58,9 @@ type ClusterUpdateParams struct {
 	// Pattern: ^(([0-9]{1,3}\.){3}[0-9]{1,3})?$
 	IngressVip *string `json:"ingress_vip,omitempty"`
 
+	// Indicate if Local Storage Operator is installed.
+	InstallOcs *bool `json:"install_ocs,omitempty"`
+
 	// A CIDR that all hosts belonging to the cluster should have an interfaces with IP address that belongs to this CIDR. The api_vip belongs to this CIDR.
 	// Pattern: ^([0-9]{1,3}\.){3}[0-9]{1,3}\/[0-9]|[1-2][0-9]|3[0-2]?$
 	MachineNetworkCidr *string `json:"machine_network_cidr,omitempty"`
