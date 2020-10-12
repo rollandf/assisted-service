@@ -2246,6 +2246,11 @@ definitions:
         type: string
         description: A comma-separated list of destination domain names, domains, IP addresses, or other network CIDRs to exclude from proxying.
         x-nullable: true
+      install_ocs:
+        type: boolean
+        description: Indicates if OpenShift Container Storage is installed.
+        x-nullable: true
+        default: false
 
   cluster-update-params:
     type: object
@@ -2347,6 +2352,11 @@ definitions:
               format: uuid
             hostname:
               type: string
+      install_ocs:
+        type: boolean
+        description: Indicate if Local Storage Operator is installed.
+        x-nullable: true
+        default: false
 
   add-hosts-cluster-create-params:
     type: object
@@ -2539,6 +2549,12 @@ definitions:
         type: string
         format: date-time
         x-go-custom-tag: gorm:"type:timestamp with time zone"
+      install_ocs:
+        type: boolean
+        description: Indicates if OpenShift Container Storage is installed.
+        x-nullable: true
+
+
   image_info:
     type: object
     properties:
