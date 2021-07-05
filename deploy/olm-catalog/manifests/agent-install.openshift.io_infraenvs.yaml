@@ -14,7 +14,21 @@ spec:
     singular: infraenv
   scope: Namespaced
   versions:
-  - name: v1beta1
+  - additionalPrinterColumns:
+    - description: The name of the cluster.
+      jsonPath: .spec.clusterRef.name
+      name: Cluster
+      type: string
+    - description: Time when the ISO image was created.
+      jsonPath: .status.createdTime
+      name: Created Time
+      type: string
+    - description: The URL to download the discovery ISO.
+      jsonPath: .status.isoDownloadURL
+      name: ISO URL
+      priority: 1
+      type: string
+    name: v1beta1
     schema:
       openAPIV3Schema:
         properties:

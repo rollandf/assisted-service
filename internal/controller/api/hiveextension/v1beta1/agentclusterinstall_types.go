@@ -84,6 +84,11 @@ const (
 // +k8s:openapi-gen=true
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Cluster",type="string",JSONPath=".spec.clusterDeploymentRef.name",description="The name of the cluster."
+// +kubebuilder:printcolumn:name="Install State",type="string",JSONPath=".status.debugInfo.state"
+// +kubebuilder:printcolumn:name="Install Completed",type="string",JSONPath=".status.conditions[?(@.type=='Completed')].reason"
+// +kubebuilder:printcolumn:name="Requirements Met",type="string",JSONPath=".status.conditions[?(@.type=='RequirementsMet')].reason"
+
 type AgentClusterInstall struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

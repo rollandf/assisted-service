@@ -116,6 +116,9 @@ type InfraEnvStatus struct {
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Cluster",type="string",JSONPath=".spec.clusterRef.name",description="The name of the cluster."
+// +kubebuilder:printcolumn:name="Created Time",type="string",JSONPath=".status.createdTime",description="Time when the ISO image was created."
+// +kubebuilder:printcolumn:name="ISO URL",type="string",JSONPath=".status.isoDownloadURL",description="The URL to download the discovery ISO.",priority=1
 
 type InfraEnv struct {
 	metav1.TypeMeta   `json:",inline"`
