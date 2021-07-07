@@ -1,0 +1,25 @@
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: agentclusterinstallvalidators.admission.agentinstall.openshift.io
+webhooks:
+- name: agentclusterinstallvalidators.admission.agentinstall.openshift.io
+  clientConfig:
+    service:
+      # reach the webhook via the registered aggregated API
+      namespace: default
+      name: kubernetes
+      path: /apis/admission.agentinstall.openshift.io/v1/agentclusterinstallvalidators
+  rules:
+  - operations:
+    - CREATE
+    - UPDATE
+    - DELETE
+    apiGroups:
+    - extensions.hive.openshift.io
+    apiVersions:
+    - v1beta1
+    resources:
+    - agentclusterinstalls
+  failurePolicy: Fail
+  sideEffects: None

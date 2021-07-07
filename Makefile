@@ -164,8 +164,11 @@ build-assisted-service:
 build-assisted-service-operator:
 	CGO_ENABLED=0 go build $(DEBUG_ARGS) -o $(BUILD_FOLDER)/assisted-service-operator cmd/operator/main.go
 
+build-web-admission:
+	CGO_ENABLED=0 go build $(DEBUG_ARGS) -o $(BUILD_FOLDER)/assisted-service-admission cmd/webadmission/main.go
+
 build-minimal: $(BUILD_FOLDER)
-	$(MAKE) -j build-assisted-service build-assisted-service-operator
+	$(MAKE) -j build-assisted-service build-assisted-service-operator build-web-admission
 
 update-minimal:
 	$(CONTAINER_COMMAND) build $(CONTAINER_BUILD_PARAMS) -f Dockerfile.assisted-service . -t $(SERVICE)
@@ -235,7 +238,7 @@ endef
 _verify_cluster:
 	$(KUBECTL) cluster-info
 
-deploy-all: $(BUILD_FOLDER) _verify_cluster deploy-namespace deploy-postgres deploy-s3 deploy-ocm-secret deploy-route53 deploy-service
+deploy-all: $(BUILD_FOLDER) _verify_cluster deploy-namespace deploy-postgres deploy-s3 deploy-ocm-secret deploy-route53 deploy-service deploy-webhooks
 	echo "Deployment done"
 
 deploy-ui: deploy-namespace
@@ -392,6 +395,9 @@ enable-kube-api-for-subsystem: $(BUILD_FOLDER)
 
 deploy-wiremock: deploy-namespace
 	python3 ./tools/deploy_wiremock.py --target $(TARGET) --namespace "$(NAMESPACE)"
+
+deploy-webhooks: deploy-namespace
+	python3 ./tools/deploy_webhooks.py --target $(TARGET) --namespace "$(NAMESPACE)"  $(DEPLOY_TAG_OPTION) $(ENABLE_KUBE_API_CMD) --apply-manifest $(APPLY_MANIFEST)
 
 deploy-olm: deploy-namespace
 	python3 ./tools/deploy_olm.py --target $(TARGET)

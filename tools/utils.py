@@ -51,8 +51,9 @@ def dump_yaml_file_docs(basename, docs):
 def set_namespace_in_yaml_docs(docs, ns):
     for doc in docs:
         try:
-            if 'namespace' in doc['metadata']:
-                doc['metadata']['namespace'] = ns
+            if doc['metadata']:
+                if 'namespace' in doc['metadata']:
+                    doc['metadata']['namespace'] = ns
         except KeyError:
             continue
 
