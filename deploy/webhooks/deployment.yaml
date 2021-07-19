@@ -1,0 +1,51 @@
+# to create the namespace-reservation-server
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: REPLACE_NAMESPACE
+  name: agentinstalladmission
+  labels:
+    app: agentinstalladmission
+    agentinstalladmission: "true"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: agentinstalladmission
+      agentinstalladmission: "true"
+  template:
+    metadata:
+      name: agentinstalladmission
+      labels:
+        app: agentinstalladmission
+        agentinstalladmission: "true"
+    spec:
+      serviceAccountName: agentinstalladmission
+      containers:
+      - name: agentinstalladmission
+        image: REPLACE_IMAGE
+        imagePullPolicy: Always
+        command:
+        - "/assisted-service-admission"
+        - "--secure-port=9443"
+        - "--audit-log-path=-"
+        - "--tls-cert-file=/var/serving-cert/tls.crt"
+        - "--tls-private-key-file=/var/serving-cert/tls.key"
+        - "--v=2"
+        ports:
+        - containerPort: 9443
+          protocol: TCP
+        envFrom:
+        volumeMounts:
+        - mountPath: /var/serving-cert
+          name: serving-cert
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 9443
+            scheme: HTTPS
+      volumes:
+      - name: serving-cert
+        secret:
+          defaultMode: 420
+          secretName: agentinstalladmission-serving-cert

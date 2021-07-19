@@ -84,6 +84,7 @@ const (
 // +k8s:openapi-gen=true
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:resource:path=agentclusterinstalls,shortName=aci
 type AgentClusterInstall struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -159,7 +160,9 @@ type AgentClusterInstallStatus struct {
 	WorkerAgentsReady int `json:"workerAgentsReady,omitempty"`
 
 	ConnectivityMajorityGroups string `json:"connectivityMajorityGroups,omitempty"`
-
+	// MachineNetwork is the list of IP address pools for machines.
+	// +optional
+	MachineNetwork []MachineNetworkEntry `json:"machineNetwork,omitempty"`
 	// DebugInfo includes information for debugging the installation process.
 	// +optional
 	DebugInfo DebugInfo `json:"debugInfo"`

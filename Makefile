@@ -76,6 +76,7 @@ REGISTRIES_FILE_PATH = registries.conf
 MIRROR_REGISTRY_SUPPORT := $(or ${MIRROR_REGISTRY_SUPPORT},False)
 HW_REQUIREMENTS := $(or ${HW_REQUIREMENTS}, $(shell cat $(ROOT_DIR)/data/default_hw_requirements.json | tr -d "\n\t "))
 DISABLED_HOST_VALIDATIONS := $(or ${DISABLED_HOST_VALIDATIONS}, "")
+DISABLED_STEPS := $(or ${DISABLED_STEPS}, "")
 ifeq ($(ENABLE_KUBE_API),true)
 	ENABLE_KUBE_API_CMD = --enable-kube-api true
 	STORAGE = filesystem
@@ -163,8 +164,11 @@ build-assisted-service:
 build-assisted-service-operator:
 	CGO_ENABLED=0 go build $(DEBUG_ARGS) -o $(BUILD_FOLDER)/assisted-service-operator cmd/operator/main.go
 
+build-web-admission:
+	CGO_ENABLED=0 go build $(DEBUG_ARGS) -o $(BUILD_FOLDER)/assisted-service-admission cmd/webadmission/main.go
+
 build-minimal: $(BUILD_FOLDER)
-	$(MAKE) -j build-assisted-service build-assisted-service-operator
+	$(MAKE) -j build-assisted-service build-assisted-service-operator build-web-admission
 
 update-minimal:
 	$(CONTAINER_COMMAND) build $(CONTAINER_BUILD_PARAMS) -f Dockerfile.assisted-service . -t $(SERVICE)
@@ -234,7 +238,7 @@ endef
 _verify_cluster:
 	$(KUBECTL) cluster-info
 
-deploy-all: $(BUILD_FOLDER) _verify_cluster deploy-namespace deploy-postgres deploy-s3 deploy-ocm-secret deploy-route53 deploy-service
+deploy-all: $(BUILD_FOLDER) _verify_cluster deploy-namespace deploy-postgres deploy-s3 deploy-ocm-secret deploy-route53 deploy-service deploy-webhooks
 	echo "Deployment done"
 
 deploy-ui: deploy-namespace
@@ -273,8 +277,8 @@ deploy-service-requirements: | deploy-namespace deploy-inventory-service-file
 		--ocp-versions '$(subst ",\",$(OPENSHIFT_VERSIONS))' --public-registries "$(PUBLIC_CONTAINER_REGISTRIES)" \
 		--check-cvo $(CHECK_CLUSTER_VERSION) --apply-manifest $(APPLY_MANIFEST) $(ENABLE_KUBE_API_CMD) $(E2E_TESTS_CONFIG) \
 		--storage $(STORAGE) --ipv6-support $(IPV6_SUPPORT) --enable-sno-dnsmasq $(ENABLE_SINGLE_NODE_DNSMASQ) \
-		--hw-requirements '$(subst ",\",$(HW_REQUIREMENTS))' --kubeapi-day2 "$(ENABLE_KUBE_API_DAY2)"
-		--disabled-host-validations "$(DISABLED_HOST_VALIDATIONS)"
+		--hw-requirements '$(subst ",\",$(HW_REQUIREMENTS))' --kubeapi-day2 "$(ENABLE_KUBE_API_DAY2)" \
+		--disabled-host-validations "$(DISABLED_HOST_VALIDATIONS)" --disabled-steps "$(DISABLED_STEPS)"
 ifeq ($(MIRROR_REGISTRY_SUPPORT), True)
 	python3 ./tools/deploy_assisted_installer_configmap_registry_ca.py  --target "$(TARGET)" \
 		--namespace "$(NAMESPACE)"  --apply-manifest $(APPLY_MANIFEST) --ca-file-path $(MIRROR_REG_CA_FILE) --registries-file-path $(REGISTRIES_FILE_PATH)
@@ -391,6 +395,9 @@ enable-kube-api-for-subsystem: $(BUILD_FOLDER)
 
 deploy-wiremock: deploy-namespace
 	python3 ./tools/deploy_wiremock.py --target $(TARGET) --namespace "$(NAMESPACE)"
+
+deploy-webhooks: deploy-namespace
+	python3 ./tools/deploy_webhooks.py --target $(TARGET) --namespace "$(NAMESPACE)"  $(DEPLOY_TAG_OPTION) $(ENABLE_KUBE_API_CMD) --apply-manifest $(APPLY_MANIFEST)
 
 deploy-olm: deploy-namespace
 	python3 ./tools/deploy_olm.py --target $(TARGET)

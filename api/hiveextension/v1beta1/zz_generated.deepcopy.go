@@ -21,7 +21,7 @@ limitations under the License.
 package v1beta1
 
 import (
-	v1 "github.com/openshift/hive/apis/hive/v1"
+	"github.com/openshift/hive/apis/hive/v1"
 	corev1 "k8s.io/api/core/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 )
@@ -133,6 +133,11 @@ func (in *AgentClusterInstallStatus) DeepCopyInto(out *AgentClusterInstallStatus
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
+	}
+	if in.MachineNetwork != nil {
+		in, out := &in.MachineNetwork, &out.MachineNetwork
+		*out = make([]MachineNetworkEntry, len(*in))
+		copy(*out, *in)
 	}
 	out.DebugInfo = in.DebugInfo
 }

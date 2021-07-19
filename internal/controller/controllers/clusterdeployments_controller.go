@@ -29,13 +29,13 @@ import (
 	"github.com/go-openapi/swag"
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
+	hiveext "github.com/openshift/assisted-service/api/hiveextension/v1beta1"
+	aiv1beta1 "github.com/openshift/assisted-service/api/v1beta1"
 	restclient "github.com/openshift/assisted-service/client"
 	"github.com/openshift/assisted-service/internal/bminventory"
 	"github.com/openshift/assisted-service/internal/cluster"
 	"github.com/openshift/assisted-service/internal/common"
 	"github.com/openshift/assisted-service/internal/constants"
-	hiveext "github.com/openshift/assisted-service/internal/controller/api/hiveextension/v1beta1"
-	aiv1beta1 "github.com/openshift/assisted-service/internal/controller/api/v1beta1"
 	"github.com/openshift/assisted-service/internal/gencrypto"
 	"github.com/openshift/assisted-service/internal/host"
 	"github.com/openshift/assisted-service/internal/manifests"
@@ -1123,6 +1123,7 @@ func (r *ClusterDeploymentsReconciler) updateStatus(ctx context.Context, log log
 	clusterSpecSynced(clusterInstall, syncErr)
 	if c != nil {
 		clusterInstall.Status.ConnectivityMajorityGroups = c.ConnectivityMajorityGroups
+		clusterInstall.Status.MachineNetwork = []hiveext.MachineNetworkEntry{{CIDR: c.MachineNetworkCidr}}
 
 		if c.Status != nil {
 			clusterInstall.Status.DebugInfo.State = swag.StringValue(c.Status)
@@ -1450,6 +1451,8 @@ func clusterValidated(clusterInstall *hiveext.AgentClusterInstall, status string
 func setClusterConditionsUnknown(clusterInstall *hiveext.AgentClusterInstall) {
 	clusterInstall.Status.DebugInfo.State = ""
 	clusterInstall.Status.DebugInfo.StateInfo = ""
+	clusterInstall.Status.DebugInfo.LogsURL = ""
+	clusterInstall.Status.DebugInfo.EventsURL = ""
 	setClusterCondition(&clusterInstall.Status.Conditions, hivev1.ClusterInstallCondition{
 		Type:    hiveext.ClusterValidatedCondition,
 		Status:  corev1.ConditionUnknown,

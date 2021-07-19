@@ -25,7 +25,7 @@ import (
 	"time"
 
 	bmh_v1alpha1 "github.com/metal3-io/baremetal-operator/apis/metal3.io/v1alpha1"
-	aiv1beta1 "github.com/openshift/assisted-service/internal/controller/api/v1beta1"
+	aiv1beta1 "github.com/openshift/assisted-service/api/v1beta1"
 	"github.com/openshift/assisted-service/models"
 	"github.com/openshift/assisted-service/pkg/conversions"
 	logutil "github.com/openshift/assisted-service/pkg/log"
@@ -485,7 +485,10 @@ func shouldReconcileBMH(bmh *bmh_v1alpha1.BareMetalHost, infraEnv *aiv1beta1.Inf
 	// This is a separate check because an existing
 	// InfraEnv with an empty ISODownloadURL means the
 	// global `Reconcile` function should also return
-	// as there is nothing left to do for it.
+	// as there is nothing left to do for it. Note that we
+	// do not have to explicitly requeue here. As soon as
+	// the InfraEnv gets its ISO, reconciliation will be
+	// triggered because of the watcher on the InfraEnv CR.
 	if infraEnv.Status.ISODownloadURL == "" {
 		return false, true, 0, "InfraEnv corresponding to the BMH has no image URL available."
 	}
@@ -1111,8 +1114,11 @@ func (r *BMACReconciler) SetupWithManager(mgr ctrl.Manager) error {
 
 		for i, bmh := range bmhs {
 
-			queue, _, _, _ := shouldReconcileBMH(bmh, infraEnv)
-			if !queue {
+			// Don't queue if shouldReconcileBMH explicitly tells us not to do so. If the function
+			// returns a cooldown period, do not stop reconcile immediately here but let the
+			// requeue happen during the reconciliation.
+			queue, _, requeuePeriod, _ := shouldReconcileBMH(bmh, infraEnv)
+			if !queue && requeuePeriod == 0 {
 				continue
 			}
 

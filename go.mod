@@ -45,6 +45,7 @@ require (
 	github.com/openshift/api v3.9.1-0.20191111211345-a27ff30ebf09+incompatible
 	github.com/openshift/client-go v0.0.0-20201020074620-f8fd44879f7c
 	github.com/openshift/custom-resource-status v1.1.0
+	github.com/openshift/generic-admission-server v1.14.1-0.20200903115324-4ddcdd976480
 	github.com/openshift/hive/apis v0.0.0-20210506000654-5c038fb05190
 	github.com/openshift/machine-api-operator v0.2.1-0.20201002104344-6abfb5440597
 	github.com/ory/dockertest/v3 v3.6.3
@@ -72,16 +73,19 @@ require (
 	k8s.io/api v0.20.5
 	k8s.io/apimachinery v0.20.5
 	k8s.io/client-go v12.0.0+incompatible
-	k8s.io/component-base v0.20.5 // indirect
 	k8s.io/utils v0.0.0-20201110183641-67b214c5f920
 	sigs.k8s.io/controller-runtime v0.7.2
 	sigs.k8s.io/yaml v1.2.0
 )
 
 replace (
+	github.com/googleapis/gnostic => github.com/googleapis/gnostic v0.4.1
 	github.com/metal3-io/baremetal-operator => github.com/openshift/baremetal-operator v0.0.0-20210409032903-31b989a197eb // Use OpenShift fork
 	k8s.io/api => k8s.io/api v0.20.0
+	k8s.io/apiserver => k8s.io/apiserver v0.20.5 // indirect
 	k8s.io/client-go => k8s.io/client-go v0.20.0
+	k8s.io/component-base => k8s.io/component-base v0.20.5
+	k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20201113171705-d219536bb9fd
 	sigs.k8s.io/cluster-api-provider-aws => github.com/openshift/cluster-api-provider-aws v0.2.1-0.20201022175424-d30c7a274820
 	sigs.k8s.io/cluster-api-provider-azure => github.com/openshift/cluster-api-provider-azure v0.1.0-alpha.3.0.20201016155852-4090a6970205
 )

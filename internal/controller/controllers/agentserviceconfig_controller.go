@@ -27,8 +27,8 @@ import (
 	"github.com/go-openapi/swag"
 	"github.com/hashicorp/go-version"
 	routev1 "github.com/openshift/api/route/v1"
+	aiv1beta1 "github.com/openshift/assisted-service/api/v1beta1"
 	"github.com/openshift/assisted-service/internal/common"
-	aiv1beta1 "github.com/openshift/assisted-service/internal/controller/api/v1beta1"
 	"github.com/openshift/assisted-service/internal/gencrypto"
 	"github.com/openshift/assisted-service/models"
 	logutil "github.com/openshift/assisted-service/pkg/log"
@@ -965,7 +965,7 @@ func (r *AgentServiceConfigReconciler) getOpenshiftVersions(log logrus.FieldLogg
 	}
 
 	openshiftVersions := make(models.OpenshiftVersions)
-	for _, image := range instance.Spec.OSImages {
+	for i, image := range instance.Spec.OSImages {
 		v, err := version.NewVersion(image.OpenshiftVersion)
 		if err != nil {
 			log.Error(err, fmt.Sprintf("Problem parsing OpenShift version %v, skipping.", image.OpenshiftVersion))
@@ -976,9 +976,9 @@ func (r *AgentServiceConfigReconciler) getOpenshiftVersions(log logrus.FieldLogg
 		versionString := fmt.Sprintf("%d.%d", v.Segments()[0], v.Segments()[1])
 		openshiftVersion := models.OpenshiftVersion{
 			DisplayName:  &versionString,
-			RhcosVersion: &image.Version,
-			RhcosImage:   &image.Url,
-			RhcosRootfs:  &image.RootFSUrl,
+			RhcosVersion: &instance.Spec.OSImages[i].Version,
+			RhcosImage:   &instance.Spec.OSImages[i].Url,
+			RhcosRootfs:  &instance.Spec.OSImages[i].RootFSUrl,
 		}
 
 		// the last entry for a particular OpenShift version takes precedence.
